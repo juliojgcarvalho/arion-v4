@@ -1,4 +1,3 @@
-
 # arion_monitor.py
 # Monitoramento e execução da Técnica 3x no Arion
 
@@ -13,7 +12,7 @@ MAX_LIQUIDATION_RISK = 0.07  # 7%
 
 # Simulação da posição aberta
 portfolio = {
-    "SOL/USDT": {
+    "SOLUSDT": {
         "entry_price": 110.0,
         "quantity": 0.5,
         "leverage": 20,
@@ -25,8 +24,8 @@ portfolio = {
 
 banca_total = 100.0  # USD fictício
 lucros_vencedores = {
-    "ETH/USDT": 6.0,
-    "BNB/USDT": 4.0
+    "ETHUSDT": 6.0,
+    "BNBUSDT": 4.0
 }
 
 # Detecção de estabilização (gráfico 4H)
@@ -112,4 +111,3 @@ if __name__ == "__main__":
     while True:
         monitor()
         time.sleep(300)  # Espera 5 minutos entre cada execução
-
