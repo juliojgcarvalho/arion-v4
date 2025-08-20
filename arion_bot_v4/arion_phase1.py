@@ -1,30 +1,31 @@
+# arion_phase1.py
+# Fase 1: Coleta e Análise de Dados
+
 import requests
-from datetime import datetime
 import pandas as pd
 import numpy as np
+from datetime import datetime
 
-url = "https://fapi.binance.com/fapi/v1/klines"
-API_BASE_HEADERS = {"User-Agent": "ArionBot/1.0"}
-
+# Coleta de dados OHLCV da Binance Futures
 def fetch_ohlcv_data(symbol, interval):
+    url = "https://fapi.binance.com/fapi/v1/klines"
     params = {
-        "symbol": symbol,
+        "symbol": symbol.replace("/", ""),  # Ex: SOL/USDT -> SOLUSDT
         "interval": interval,
         "limit": 100
     }
-
     try:
-        response = requests.get(url, params=params, timeout=10, headers=API_BASE_HEADERS)
+        response = requests.get(url, params=params, timeout=10)
         response.raise_for_status()
         raw_data = response.json()
         ohlcv = [
             (
-                candle[0] // 1000,     # timestamp (ms to s)
-                float(candle[1]),      # open
-                float(candle[2]),      # high
-                float(candle[3]),      # low
-                float(candle[4]),      # close
-                float(candle[5])       # volume
+                candle[0],     # timestamp
+                float(candle[1]),  # open
+                float(candle[2]),  # high
+                float(candle[3]),  # low
+                float(candle[4]),  # close
+                float(candle[5])   # volume
             )
             for candle in raw_data
         ]
@@ -33,20 +34,16 @@ def fetch_ohlcv_data(symbol, interval):
         print(f"[ERRO] Falha ao buscar dados de {symbol}: {e}")
         return []
 
+# Cálculo do RSI (Índice de Força Relativa)
 def calculate_rsi(series, period=14):
     delta = series.diff()
-    gain = delta.clip(lower=0)
-    loss = -delta.clip(upper=0)
+    gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
+    loss = (-delta.where(delta < 0, 0)).rolling(window=period).mean()
+    rs = gain / loss
+    return 100 - (100 / (1 + rs))
 
-    avg_gain = gain.rolling(window=period).mean()
-    avg_loss = loss.rolling(window=period).mean()
-
-    rs = avg_gain / avg_loss
-    rsi = 100 - (100 / (1 + rs))
-
-    return rsi
-
-def log_signal(symbol, indicators, context):
-    print(f"[Arion LOG] Sinal detectado para {symbol}")
-    print(f"Indicadores: {indicators}")
-    print(f"Contexto: {context}")
+# Registro de sinais
+def log_signal(symbol, indicators, context=None):
+    print(f"[LOG] {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | {symbol} | RSI: {indicators['rsi']:.2f}")
+    if context:
+        print(f"[LOG CONTEXTO] {context}")
