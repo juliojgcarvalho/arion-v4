@@ -83,7 +83,7 @@ def fetch_ohlcv_data(symbol, timeframe):
     except Exception as e:
         print(f"[ERRO] Falha ao buscar dados de {symbol}: {e}")
         return []
-)
+
 
 # Execução principal
 def run_phase1():
