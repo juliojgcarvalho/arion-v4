@@ -81,7 +81,7 @@ def fetch_ohlcv_data(symbol, timeframe):
         ]
         return ohlcv
     except Exception as e:
-        print(f"[ERRO] Falha ao buscar dados de {symbol}: {e}")
+        print(f"[ERRO] Falha ao buscar dados de {symbol}: {e}"
         return []
 
 
