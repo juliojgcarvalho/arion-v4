@@ -105,6 +105,11 @@ def monitor():
 
     manage_liquidation_risk()
 
+import time
+
 if __name__ == "__main__":
     print(f"[Arion Monitor] Início do monitoramento - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    monitor()
+    while True:
+        monitor()
+        time.sleep(300)  # Espera 5 minutos entre cada execução
+
