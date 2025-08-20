@@ -1,1 +1,1 @@
-worker: python arion_phase1.py
+worker: python arion_bot_v4/arion_phase1.py
