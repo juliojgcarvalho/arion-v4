@@ -40,17 +40,50 @@ def calculate_rsi(series, period=14):
 def get_risk_allocation(pair):
     return {"pair": pair, "allocation_usdt": 10.0, "leverage": 20}
 
-def fetch_ohlcv_data(symbol, timeframe):
-    now = datetime.now()
-    timestamps = [now.timestamp() - 60*60*4*i for i in range(50)][::-1]
-    prices = np.linspace(100, 120, 50) + np.random.randn(50)
-    highs = prices + 1
-    lows = prices - 1
-    volumes = np.random.randint(100, 1000, 50)
-    return list(zip(timestamps, prices-1, highs, lows, prices, volumes))
+import requests
+import time
 
-def log_signal(pair, signal, allocation):
-    print(f"[LOG] Sinal registrado para {pair} | RSI: {signal['rsi']:.2f} | Alocação: {allocation['allocation_usdt']} USDT")
+def fetch_ohlcv_data(symbol, timeframe):
+    """
+    Busca dados reais da Binance Futures em formato OHLCV.
+    Ex: symbol = "BTC/USDT", timeframe = "4h"
+    """
+    symbol = symbol.replace("/", "").upper()
+
+    # Mapear os timeframes do Arion para os da Binance
+    interval_map = {
+        "1m": "1m", "5m": "5m", "15m": "15m",
+        "1h": "1h", "4h": "4h", "1d": "1d"
+    }
+    interval = interval_map.get(timeframe, "1h")
+
+    url = f"https://fapi.binance.com/fapi/v1/klines"
+    params = {
+        "symbol": symbol,
+        "interval": interval,
+        "limit": 100
+    }
+
+    try:
+        response = requests.get(url, params=params, timeout=10)
+        response.raise_for_status()
+        raw_data = response.json()
+        ohlcv = [
+            (
+                candle[0] / 1000,      # timestamp (ms to s)
+                float(candle[1]),      # open
+                float(candle[2]),      # high
+                float(candle[3]),      # low
+                float(candle[4]),      # close
+                float(candle[5])       # volume
+            )
+            for candle in raw_data
+        ]
+        return ohlcv
+    except Exception as e:
+        print(f"[ERRO] Falha ao buscar dados de {symbol}: {e}")
+        return []
+)
 
 # Execução principal
 def run_phase1():
