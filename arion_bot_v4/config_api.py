@@ -1,7 +1,3 @@
-API_BASE = "https://api.binance.com"
+# config_api.py
 API_KEY = "oXYBnDjYwvjkvz00Xoz9iZAkKpQXL4HBCrnjv7kFE2t2zG0iqtZ12zJN2y84qqDH"
-SECRET_KEY = "TMXJ1Dj1wDH9ZMrJZHixVnO7ODKG76w29t7S9WpnqqqizgmwNT3YuFzVgbKAZMs6"
-
-HEADERS = {
-    "X-MBX-APIKEY": API_KEY
-}
+API_SECRET = "TMXJ1Dj1wDH9ZMrJZHixVnO7ODKG76w29t7S9WpnqqqizgmwNT3YuFzVgbKAZMs6t"
